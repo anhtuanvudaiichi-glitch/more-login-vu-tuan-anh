@@ -1,0 +1,5 @@
+{
+  "request_id": "fx-req-003",
+  "target": { "profile_id": "PROFILE_001" },
+  "options": { "async": false }
+}

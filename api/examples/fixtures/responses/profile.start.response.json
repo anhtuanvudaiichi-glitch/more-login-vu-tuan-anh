@@ -1,0 +1,8 @@
+{
+  "success": true,
+  "data": { "profile_id": "PROFILE_001", "debug_port": 9222, "webdriver": "http://127.0.0.1:9222" },
+  "error": null,
+  "request_id": "fx-req-002",
+  "agent_id": "agent-001",
+  "job_id": null
+}

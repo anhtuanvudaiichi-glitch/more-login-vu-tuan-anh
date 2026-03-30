@@ -1,0 +1,8 @@
+{
+  "success": true,
+  "data": { "profile_id": "PROFILE_001", "status": "running" },
+  "error": null,
+  "request_id": "fx-req-003",
+  "agent_id": "agent-001",
+  "job_id": null
+}

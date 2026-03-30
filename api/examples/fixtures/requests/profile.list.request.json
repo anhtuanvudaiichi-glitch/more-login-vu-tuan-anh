@@ -1,0 +1,5 @@
+{
+  "request_id": "fx-req-001",
+  "payload": { "page": 1, "page_size": 20 },
+  "options": { "async": false }
+}

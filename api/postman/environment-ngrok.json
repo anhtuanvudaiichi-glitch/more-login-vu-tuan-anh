@@ -1,0 +1,61 @@
+{
+  "id": "morelogin-agent-ngrok-env",
+  "name": "MoreLogin Agent - Public [SOURCE OF TRUTH]",
+  "values": [
+    {
+      "key": "base_url",
+      "value": "[PLACEHOLDER:https://agent.example.com]",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "api_key_id",
+      "value": "[PLACEHOLDER:AGENT_API_KEY_ID]",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "api_key_secret",
+      "value": "[PLACEHOLDER:AGENT_API_KEY_SECRET]",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "profile_id",
+      "value": "[PLACEHOLDER:PROFILE_ID]",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "cloudphone_id",
+      "value": "[PLACEHOLDER:CLOUDPHONE_ID]",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "job_id",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "timestamp",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "nonce",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "signature",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}

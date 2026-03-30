@@ -1,0 +1,9 @@
+{
+  "event_id": "evt-profile-started-001",
+  "event_type": "profile_started",
+  "source": "morelogin-agent",
+  "trace_id": "trace-profile-001",
+  "job_id": null,
+  "status": "queued_for_forwarding",
+  "raw_event": { "profile_id": "PROFILE_001", "status": "running" }
+}

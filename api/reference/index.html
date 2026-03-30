@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoreLogin Agent API Reference</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f5f5;
+        }
+        .redoc-wrap {
+            height: 100vh;
+        }
+        .menu-content {
+            background: #fff;
+        }
+        /* Custom header */
+        .api-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .api-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .api-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        .api-header .version {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+        .footer {
+            background: #2d3748;
+            color: #a0aec0;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.85rem;
+        }
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="api-header">
+        <h1>MoreLogin Agent API</h1>
+        <p>Remote control API for MoreLogin browser and cloud phone automation</p>
+        <p style="margin-top:8px;font-size:0.95rem;opacity:0.85">
+            Local: <code style="background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:4px">http://127.0.0.1:18080</code>
+            &nbsp;|&nbsp;
+            Public: <code style="background:rgba(255,255,255,0.2);padding:2px 8px;border-radius:4px">https://[PLACEHOLDER:agent.example.com]</code>
+        </p>
+        <span class="version">v1.0.0</span>
+    </div>
+    
+    <div id="redoc-container"></div>
+    
+    <div class="footer">
+        <p>Documentation generated from OpenAPI 3.1 specification &mdash; 
+        <a href="../openapi/agent-v1.openapi.yaml">YAML</a> | 
+        <a href="../openapi/agent-v1.openapi.json">JSON</a> | 
+        <a href="../guides/quickstart.md">Quickstart</a> | 
+        <a href="../guides/authentication.md">Auth Guide</a></p>
+        <p>For support: <a href="mailto:support@morelogin.com">support@morelogin.com</a> | 
+        <a href="https://morelogin.com">Website</a></p>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/redoc@next/bundles/redoc.standalone.js"></script>
+    <script>
+        Redoc.init(
+            '../openapi/agent-v1.openapi.json',
+            {
+                theme: {
+                    colors: {
+                        primary: {
+                            main: '#667eea'
+                        }
+                    },
+                    sidebar: {
+                        backgroundColor: '#ffffff'
+                    }
+                },
+                scrollYOffset: 80,
+                hideHostname: false,
+                expandResponses: "200,201,400,401,403,404,409,413,422,429,500,502,503",
+                jsonSampleExpandLevel: 3,
+                sortPropsAlphabetically: true,
+                showConsole: false,
+                suppressWarnings: true
+            },
+            document.getElementById('redoc-container')
+        );
+    </script>
+</body>
+</html>
+

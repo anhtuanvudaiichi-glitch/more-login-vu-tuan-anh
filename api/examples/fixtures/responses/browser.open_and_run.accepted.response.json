@@ -1,0 +1,8 @@
+{
+  "success": true,
+  "data": { "status": "queued", "command": "browser.open_and_run" },
+  "error": null,
+  "request_id": "fx-req-004",
+  "agent_id": "agent-001",
+  "job_id": 9001
+}

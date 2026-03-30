@@ -1,0 +1,6 @@
+{
+  "request_id": "fx-req-002",
+  "target": { "profile_id": "PROFILE_001" },
+  "payload": { "is_headless": false },
+  "options": { "async": false }
+}

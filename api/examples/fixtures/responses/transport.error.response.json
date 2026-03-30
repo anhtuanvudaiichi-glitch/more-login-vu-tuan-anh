@@ -1,0 +1,14 @@
+{
+  "success": false,
+  "data": null,
+  "error": {
+    "type": "transport_error",
+    "message": "Upstream timeout",
+    "details": { "timeout_ms": 30000 },
+    "retryable": true
+  },
+  "request_id": "fx-req-007",
+  "agent_id": "agent-001",
+  "job_id": null,
+  "upstream_code": 503
+}

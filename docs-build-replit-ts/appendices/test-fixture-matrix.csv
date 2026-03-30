@@ -1,0 +1,9 @@
+fixture_id,test_case_id,priority,module,endpoint_or_command,request_fixture,response_fixture,callback_fixture,expected_evidence_id,expected_result
+FX-REQ-001,T-ACC-01,P0,Account,profile.list,requests/profile.list.request.json,responses/profile.list.response.json,,EVD-001,200 and profile list rendered
+FX-REQ-002,T-ACC-02,P0,Account,profile.start,requests/profile.start.request.json,responses/profile.start.response.json,callbacks/profile.started.callback.json,EVD-002,profile running and callback verified
+FX-REQ-003,T-ACC-02,P0,Account,profile.status,requests/profile.status.request.json,responses/profile.status.response.json,,EVD-003,status synced in UI
+FX-REQ-004,T-CMP-02,P0,Campaign,browser.open_and_run,requests/browser.open_and_run.request.json,responses/browser.open_and_run.accepted.response.json,callbacks/job.completed.callback.json,EVD-004,job completed and state machine updated
+FX-REQ-005,T-CMP-02,P0,Campaign,browser.open_and_run,requests/browser.open_and_run.request.json,responses/browser.open_and_run.accepted.response.json,callbacks/job.failed.callback.json,EVD-005,job failed path handled
+FX-REQ-006,T-CMP-03,P1,Campaign,profile.list,requests/profile.list.request.json,responses/rate_limit.error.response.json,,EVD-006,retry after honored
+FX-REQ-007,T-CMP-04,P1,Campaign,profile.list,requests/profile.list.request.json,responses/transport.error.response.json,,EVD-007,backoff retry and no data corruption
+FX-REQ-008,T-INB-02,P0,Inbox,callback.duplicate,,,callbacks/duplicate.event.callback.json,EVD-008,deduped no duplicate event

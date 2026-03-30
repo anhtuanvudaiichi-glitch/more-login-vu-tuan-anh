@@ -1,0 +1,14 @@
+{
+  "success": false,
+  "data": null,
+  "error": {
+    "type": "rate_limit_error",
+    "message": "Too many requests",
+    "details": { "retry_after": 2 },
+    "retryable": true
+  },
+  "request_id": "fx-req-006",
+  "agent_id": "agent-001",
+  "job_id": null,
+  "upstream_code": 429
+}

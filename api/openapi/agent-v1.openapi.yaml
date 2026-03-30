@@ -1,0 +1,932 @@
+openapi: 3.1.0
+
+info:
+  title: MoreLogin Automation Agent API
+  description: |
+    Remote-control API for MoreLogin browser profiles and cloud phone automation.
+
+    ## Quick Start
+
+    | Field | Value |
+    |-------|-------|
+    | **API Key ID** | `[PLACEHOLDER:AGENT_API_KEY_ID]` |
+    | **API Key Secret** | `[PLACEHOLDER:AGENT_API_KEY_SECRET]` |
+    | **Local URL** | `http://127.0.0.1:18080` |
+    | **Public URL (ngrok)** | `https://[PLACEHOLDER:agent.example.com]` |
+
+    ## Authentication
+
+    All endpoints **except** `POST /agent/v1/callbacks/morelogin` (from loopback) require HMAC-SHA256 via 4 headers:
+
+    | Header | Description |
+    |--------|-------------|
+    | `X-API-Key` | `[PLACEHOLDER:AGENT_API_KEY_ID]` |
+    | `X-Timestamp` | Unix timestamp in seconds |
+    | `X-Nonce` | Unique UUID per request |
+    | `X-Signature` | HMAC-SHA256 hex digest |
+
+    **Canonical string:** `{METHOD}\n{PATH}\n{TIMESTAMP}\n{NONCE}\n{SHA256(BODY)}`
+
+    - `PATH` is URL path **only** — does **not** include query string
+    - `SHA256(BODY)` is lowercase hex; empty body uses SHA-256 of `""`
+
+    **Signature:** `HMAC_SHA256_HEX("[PLACEHOLDER:AGENT_API_KEY_SECRET]", canonical_string)`
+
+    ### Limits
+
+    | Limit | Value |
+    |-------|-------|
+    | Nonce TTL | 300 s |
+    | Timestamp replay window | 120 s |
+    | Max request body | 2 MB |
+    | Rate limit | 60 req/min per key |
+
+    ## Command Modes
+
+    | Mode | Commands |
+    |------|----------|
+    | **Sync** | `profile.list`, `profile.start`, `profile.stop`, `profile.status`, `cloudphone.list`, `cloudphone.power_on`, `cloudphone.power_off`, `cloudphone.exec_command`, `schedule.cancel` |
+    | **Always Async** | `browser.open_and_run`, `file.attach_from_url`, `file.download`, `schedule.create` |
+
+    ## Job Status Values
+
+    `queued` → `running` → `completed` | `failed`
+  version: 1.0.0
+  contact:
+    name: MoreLogin Support
+    email: support@morelogin.com
+    url: https://morelogin.com
+  license:
+    name: Proprietary
+
+externalDocs:
+  description: Full API guides
+  url: https://[PLACEHOLDER:agent.example.com]/docs
+
+servers:
+  - url: http://127.0.0.1:18080
+    description: Local agent
+  - url: https://[PLACEHOLDER:agent.example.com]
+    description: Public
+  - url: https://{agent-host}
+    description: Custom tunnel
+    variables:
+      agent-host:
+        default: agent.example.com
+
+tags:
+  - name: Health
+    description: Agent and upstream health checks
+  - name: Diagnostics
+    description: MoreLogin diagnostics
+  - name: Commands
+    description: Execute automation commands
+  - name: Jobs
+    description: Async job tracking
+  - name: Callbacks
+    description: Callback ingestion and dead-letter management
+
+security:
+  - HmacAuth: []
+
+paths:
+  /agent/v1/health:
+    get:
+      tags: [Health]
+      summary: Agent Health Check
+      description: |
+        Returns agent health including DB connectivity and worker heartbeat.
+      operationId: health_check
+      responses:
+        '200':
+          description: Health status
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ResponseEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/HealthData'
+              example:
+                success: true
+                data:
+                  status: ok
+                  agent_id: agent-001
+                  database: { ok: true }
+                  worker: { alive: true, last_heartbeat: "2026-03-25T00:00:00Z", age_seconds: 3 }
+                  sqlite_pragma: { journal_mode: wal, synchronous: "1" }
+                error: null
+                request_id: null
+                agent_id: agent-001
+                job_id: null
+                upstream_code: 0
+                upstream_msg: ok
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /agent/v1/health/upstream:
+    get:
+      tags: [Health]
+      summary: Upstream Health Check
+      description: Checks connectivity to MoreLogin local API.
+      operationId: health_check_upstream
+      responses:
+        '200':
+          description: Upstream status
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ResponseEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/HealthUpstreamData'
+              example:
+                success: true
+                data:
+                  status: ok
+                  agent_id: agent-001
+                  upstream_status: connected
+                  upstream_base_url: "http://127.0.0.1:40000"
+                error: null
+                agent_id: agent-001
+                upstream_code: 0
+                upstream_msg: ok
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /agent/v1/diagnostics/morelogin:
+    get:
+      tags: [Diagnostics]
+      summary: Get MoreLogin Diagnostics
+      description: Returns latest diagnostics snapshot plus running status.
+      operationId: get_morelogin_diagnostics
+      responses:
+        '200':
+          description: Diagnostics snapshot
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ResponseEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DiagnosticsData'
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /agent/v1/diagnostics/morelogin/refresh:
+    post:
+      tags: [Diagnostics]
+      summary: Refresh MoreLogin Diagnostics
+      description: Triggers manual diagnostics. If already running, returns current state.
+      operationId: refresh_morelogin_diagnostics
+      responses:
+        '200':
+          description: Triggered or already running
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEnvelope'
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /agent/v1/commands/{command_name}:
+    post:
+      tags: [Commands]
+      summary: Execute Automation Command
+      description: |
+        Execute or queue one of 13 automation commands.
+
+        ## Always-Async Commands
+
+        These **always** return `job_id` regardless of `options.async`:
+        `browser.open_and_run`, `file.attach_from_url`, `file.download`, `schedule.create`
+
+        ## Per-Command Reference
+
+        ### profile.list
+        Target: none | Payload: `page` (int, default 1), `page_size` (int, default 20)
+        Response: `{ "profiles": [...] }`
+
+        ### profile.start
+        Target: `profile_id` | Payload: `is_headless` (bool), `cdp_evasion` (bool)
+        Response: `{ "profile_id", "debug_port": 9222, "webdriver": "http://..." }`
+
+        ### profile.stop
+        Target: `profile_id` | Payload: none
+        Response: `{ "profile_id" }`
+
+        ### profile.status
+        Target: `profile_id` | Payload: none
+        Response: `{ "detail": {...}, "start_status": {...} }`
+
+        ### browser.open_and_run ⚡ Always Async
+        Target: `profile_id`
+        Payload: `script` (string, **required**), `is_headless`, `cdp_evasion`, `ready_wait_seconds` (number, default 1)
+        Job result: `{ "profile_id", "status": "script_executed", "script_length", "debug_port", "webdriver", "execution_ms", "script_result", "console_logs_count", "console_logs": [...max 20] }`
+
+        ### cloudphone.list
+        Target: none | Payload: `page`, `page_size`
+        Response: `{ "cloudphones": [...] }`
+
+        ### cloudphone.power_on
+        Target: `cloudphone_id` | Payload: none
+        Response: `{ "cloudphone_id", "status": "powered_on" }`
+
+        ### cloudphone.power_off
+        Target: `cloudphone_id` | Payload: none
+        Response: `{ "cloudphone_id", "status": "powered_off" }`
+
+        ### cloudphone.exec_command
+        Target: `cloudphone_id` | Payload: `command` (string, **required**)
+        Response: `{ "cloudphone_id", "output", "exit_code" }`
+
+        ### file.attach_from_url ⚡ Always Async
+        Target: `cloudphone_id` | Payload: `file_url` (string, **required**)
+        Polling: 0→1→2 (success)
+        Job result: `{ "terminal_id", "status": "2", "result": {...} }`
+
+        ### file.download ⚡ Always Async
+        Target: `cloudphone_id` | Payload: `file_url` (string, **required**)
+        Polling: 10→20→30→40 (success)
+        Job result: `{ "terminal_id", "status": "40", "result": {...} }`
+
+        ### schedule.create ⚡ Always Async
+        Target: `cloudphone_id` | Payload: `task_config` (object: `{name, cron}`, **required**)
+        Job result: `{ "cloudphone_id", "schedule_id", "status": "scheduled" }`
+
+        ### schedule.cancel
+        Target: none | Payload: `schedule_id` (string, **required**)
+        Response: `{ "schedule_id", "status": "cancelled" }`
+
+        ## Idempotency
+        `idempotency_key`: same key+payload → cached result; same key+different payload → 409 error. Window: 24h.
+
+        ## Callback Override
+        `options.callback_url`: per-request override for `BACKEND_CALLBACK_URL`.
+      operationId: enqueue_command
+      parameters:
+        - name: command_name
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - browser.open_and_run
+              - cloudphone.exec_command
+              - cloudphone.list
+              - cloudphone.power_off
+              - cloudphone.power_on
+              - file.attach_from_url
+              - file.download
+              - profile.list
+              - profile.start
+              - profile.status
+              - profile.stop
+              - schedule.cancel
+              - schedule.create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommandRequest'
+            examples:
+              profile_start:
+                summary: profile.start
+                value:
+                  request_id: "550e8400-e29b-41d4-a716-446655440001"
+                  target: { profile_id: "[PLACEHOLDER:PROFILE_ID]" }
+                  payload: { is_headless: false, cdp_evasion: false }
+                  options: { async: false }
+              browser_open_and_run:
+                summary: browser.open_and_run (always async)
+                value:
+                  request_id: "550e8400-e29b-41d4-a716-446655440004"
+                  idempotency_key: "run-script-001"
+                  target: { profile_id: "[PLACEHOLDER:PROFILE_ID]" }
+                  payload: { script: "return document.title;", is_headless: false, cdp_evasion: false, ready_wait_seconds: 1 }
+                  options: { async: true, timeout_seconds: 120 }
+              cloudphone_exec:
+                summary: cloudphone.exec_command
+                value:
+                  request_id: "550e8400-e29b-41d4-a716-446655440008"
+                  target: { cloudphone_id: "[PLACEHOLDER:CLOUDPHONE_ID]" }
+                  payload: { command: "echo hello" }
+                  options: { async: false }
+              file_attach:
+                summary: file.attach_from_url (always async)
+                value:
+                  request_id: "550e8400-e29b-41d4-a716-446655440009"
+                  target: { cloudphone_id: "[PLACEHOLDER:CLOUDPHONE_ID]" }
+                  payload: { file_url: "https://example.com/file.txt" }
+                  options: { async: true, timeout_seconds: 300 }
+              schedule_create:
+                summary: schedule.create (always async)
+                value:
+                  request_id: "550e8400-e29b-41d4-a716-446655440011"
+                  target: { cloudphone_id: "[PLACEHOLDER:CLOUDPHONE_ID]" }
+                  payload: { task_config: { name: "my-task", cron: "*/5 * * * *" } }
+                  options: { async: true }
+      responses:
+        '200':
+          description: Command executed (sync) or queued (async)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEnvelope'
+              examples:
+                sync_result:
+                  summary: Sync — profile.start result
+                  value:
+                    success: true
+                    data: { profile_id: "[PLACEHOLDER:PROFILE_ID]", debug_port: 9222, webdriver: "http://127.0.0.1:9222" }
+                    error: null
+                    request_id: "550e8400-e29b-41d4-a716-446655440001"
+                    agent_id: agent-001
+                    job_id: null
+                    upstream_code: 0
+                    upstream_msg: ok
+                async_queued:
+                  summary: Async — job queued
+                  value:
+                    success: true
+                    data: { status: queued, command: browser.open_and_run }
+                    error: null
+                    request_id: "550e8400-e29b-41d4-a716-446655440004"
+                    agent_id: agent-001
+                    job_id: 42
+                    upstream_code: 0
+                    upstream_msg: ok
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '413': { $ref: '#/components/responses/PayloadTooLarge' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+        '500': { $ref: '#/components/responses/InternalError' }
+        '502': { $ref: '#/components/responses/UpstreamError' }
+        '503': { $ref: '#/components/responses/ServiceUnavailable' }
+
+  /agent/v1/jobs/{job_id}:
+    get:
+      tags: [Jobs]
+      summary: Get Job Status
+      description: |
+        Retrieve status and result of an async job.
+        Status lifecycle: `queued` → `running` → `completed` | `failed`.
+        Poll every 2-5s with exponential backoff.
+      operationId: get_job_status
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Job status and result
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ResponseEnvelope'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/JobStatusData'
+              examples:
+                running:
+                  summary: Job running
+                  value:
+                    success: true
+                    data:
+                      job_id: 42
+                      request_id: "550e8400-e29b-41d4-a716-446655440004"
+                      command_name: browser.open_and_run
+                      status: running
+                      attempt_count: 1
+                      max_attempts: 3
+                      result: null
+                      error: null
+                      created_at: "2026-03-25T00:00:00Z"
+                      updated_at: "2026-03-25T00:00:05Z"
+                      completed_at: null
+                    error: null
+                    agent_id: agent-001
+                    job_id: 42
+                completed:
+                  summary: Job completed
+                  value:
+                    success: true
+                    data:
+                      job_id: 42
+                      request_id: "550e8400-e29b-41d4-a716-446655440004"
+                      command_name: browser.open_and_run
+                      status: completed
+                      attempt_count: 1
+                      max_attempts: 3
+                      result:
+                        profile_id: "[PLACEHOLDER:PROFILE_ID]"
+                        status: script_executed
+                        script_length: 22
+                        debug_port: 9222
+                        webdriver: "http://127.0.0.1:9222"
+                        execution_ms: 1234
+                        script_result: "My Page Title"
+                        console_logs_count: 1
+                        console_logs: ["log: hello"]
+                      error: null
+                      created_at: "2026-03-25T00:00:00Z"
+                      updated_at: "2026-03-25T00:00:10Z"
+                      completed_at: "2026-03-25T00:00:10Z"
+                    error: null
+                    agent_id: agent-001
+                    job_id: 42
+                failed:
+                  summary: Job failed
+                  value:
+                    success: true
+                    data:
+                      job_id: 42
+                      command_name: browser.open_and_run
+                      status: failed
+                      attempt_count: 3
+                      max_attempts: 3
+                      result: null
+                      error: { type: upstream_business_error, message: "Profile not found", retryable: false }
+                      created_at: "2026-03-25T00:00:00Z"
+                      completed_at: "2026-03-25T00:00:30Z"
+                    error: null
+                    agent_id: agent-001
+                    job_id: 42
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '429': { $ref: '#/components/responses/RateLimited' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /agent/v1/callbacks/morelogin:
+    post:
+      tags: [Callbacks]
+      summary: Receive Callback from MoreLogin
+      description: |
+        Receives callback events from MoreLogin. No HMAC auth from loopback (127.0.0.1).
+        Non-loopback requires X-Timestamp, X-Nonce, X-Signature headers.
+        Duplicate event_id values are deduplicated.
+        After ingestion, agent forwards to your BACKEND_CALLBACK_URL.
+      operationId: receive_morelogin_callback
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CallbackRequest'
+            example:
+              event_id: "550e8400-e29b-41d4-a716-446655440000"
+              event_type: profile_started
+              source: morelogin
+              trace_id: "123e4567-e89b-12d3-a456-426614174000"
+              job_id: 12345
+              payload: { profile_id: "PROFILE_123", status: running }
+      responses:
+        '200':
+          description: Callback received
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEnvelope'
+              example:
+                success: true
+                data: { event_id: "550e8400-e29b-41d4-a716-446655440000", status: queued_for_forwarding, idempotent: false }
+                error: null
+                agent_id: agent-001
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+  /agent/v1/local-ops/callbacks/dead-letter/{event_id}/retry:
+    post:
+      tags: [Callbacks]
+      summary: Retry Dead-Letter Callback
+      description: |
+        Retries a dead-letter callback. **Loopback only** (127.0.0.1) — returns 403 from other IPs.
+      operationId: retry_dead_letter_callback
+      parameters:
+        - name: event_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Event reset to pending
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResponseEnvelope'
+              example:
+                success: true
+                data: { event_id: "550e8400-e29b-41d4-a716-446655440000", status: pending }
+                error: null
+                agent_id: agent-001
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalError' }
+
+components:
+  securitySchemes:
+    HmacAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: |
+        HMAC-SHA256 authentication. Credentials: `[PLACEHOLDER:AGENT_API_KEY_ID]` / `[PLACEHOLDER:AGENT_API_KEY_SECRET]`.
+        Requires 4 headers: X-API-Key, X-Timestamp, X-Nonce, X-Signature.
+        Canonical: `{METHOD}\n{PATH}\n{TIMESTAMP}\n{NONCE}\n{SHA256(BODY)}`
+        PATH = URL path only (no query string).
+
+  responses:
+    BadRequest:
+      description: Validation error (400)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ResponseEnvelope' }
+          example:
+            success: false
+            error: { type: validation_error, message: "profile_id is required", details: { field: "target.profile_id" }, retryable: false }
+            agent_id: agent-001
+
+    Unauthorized:
+      description: Authentication failed (401)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ResponseEnvelope' }
+          example:
+            success: false
+            error: { type: auth_error, message: "Invalid HMAC signature", retryable: false }
+            agent_id: agent-001
+
+    Forbidden:
+      description: Loopback only (403)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ResponseEnvelope' }
+          example:
+            success: false
+            error: { type: auth_error, message: "Loopback access only", retryable: false }
+            agent_id: agent-001
+
+    NotFound:
+      description: Resource not found (404)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ResponseEnvelope' }
+          example:
+            success: false
+            error: { type: not_found_error, message: "Job not found", retryable: false }
+            agent_id: agent-001
+
+    Conflict:
+      description: Idempotency conflict (409)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ResponseEnvelope' }
+          example:
+            success: false
+            error: { type: replay_error, message: "Idempotency key conflict", details: { existing_job_id: 12345 }, retryable: false }
+            agent_id: agent-001
+
+    PayloadTooLarge:
+      description: Body exceeds 2 MB (413)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ResponseEnvelope' }
+          example:
+            success: false
+            error: { type: validation_error, message: "Request body too large (max 2MB)", retryable: false }
+            agent_id: agent-001
+
+    ValidationError:
+      description: FastAPI validation error (422)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/HTTPValidationError' }
+
+    RateLimited:
+      description: Rate limit exceeded (429)
+      headers:
+        Retry-After:
+          schema: { type: integer }
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ResponseEnvelope' }
+          example:
+            success: false
+            error: { type: rate_limit_error, message: "Rate limit exceeded", details: { limit: 60, window_seconds: 60 }, retryable: true }
+            agent_id: agent-001
+
+    InternalError:
+      description: Internal error (500)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ResponseEnvelope' }
+          example:
+            success: false
+            error: { type: internal_error, message: "Unexpected error", retryable: false }
+            agent_id: agent-001
+
+    UpstreamError:
+      description: MoreLogin API error (502)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ResponseEnvelope' }
+          example:
+            success: false
+            error: { type: upstream_business_error, message: "Profile not found", details: { upstream_code: 1001 }, retryable: false }
+            agent_id: agent-001
+
+    ServiceUnavailable:
+      description: Network/transport error (503)
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ResponseEnvelope' }
+          example:
+            success: false
+            error: { type: transport_error, message: "Connection timeout", retryable: true }
+            agent_id: agent-001
+
+  schemas:
+    CommandTarget:
+      type: object
+      properties:
+        profile_id:
+          type: string
+          description: Browser profile ID (for profile.* and browser.* commands)
+        cloudphone_id:
+          type: string
+          description: Cloud phone ID (for cloudphone.*, file.*, schedule.* commands)
+
+    CommandOptions:
+      type: object
+      properties:
+        async:
+          type: boolean
+          default: false
+          description: Queue and return job_id. Note browser.open_and_run, file.attach_from_url, file.download, schedule.create are ALWAYS async.
+        timeout_seconds:
+          type: integer
+          default: 60
+          minimum: 1
+          maximum: 3600
+        callback_url:
+          type: string
+          format: uri
+          description: Per-request callback URL override (must be https://)
+
+    CommandRequest:
+      type: object
+      properties:
+        request_id:
+          type: string
+          format: uuid
+          description: Client UUID for tracing
+        idempotency_key:
+          type: string
+          maxLength: 255
+          description: Safe retry key. Same key+payload=cached result. Same key+different payload=409. Window 24h.
+        target:
+          $ref: '#/components/schemas/CommandTarget'
+        payload:
+          type: object
+          additionalProperties: true
+          description: Command-specific payload (see per-command reference)
+        options:
+          $ref: '#/components/schemas/CommandOptions'
+
+    CallbackRequest:
+      type: object
+      required: [event_id, event_type]
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        event_type:
+          type: string
+          enum: [profile_started, profile_closed, profile_error, phone_power_on, phone_power_off, job_completed, job_failed]
+        source:
+          type: string
+        trace_id:
+          type: string
+          format: uuid
+        job_id:
+          type: integer
+          nullable: true
+        payload:
+          type: object
+          additionalProperties: true
+
+    ResponseEnvelope:
+      type: object
+      required: [success, agent_id]
+      properties:
+        success:
+          type: boolean
+        data:
+          anyOf: [{ type: object, additionalProperties: true }, { type: 'null' }]
+        error:
+          anyOf: [{ $ref: '#/components/schemas/ErrorDetail' }, { type: 'null' }]
+        request_id:
+          anyOf: [{ type: string, format: uuid }, { type: 'null' }]
+        agent_id:
+          type: string
+        job_id:
+          anyOf: [{ type: integer }, { type: 'null' }]
+        upstream_code:
+          type: integer
+          default: 0
+        upstream_msg:
+          type: string
+          default: ok
+
+    ErrorDetail:
+      type: object
+      required: [type, message]
+      properties:
+        type:
+          type: string
+          enum: [validation_error, auth_error, replay_error, not_found_error, rate_limit_error, upstream_business_error, transport_error, internal_error]
+        message:
+          type: string
+        details:
+          type: object
+          nullable: true
+          additionalProperties: true
+        retryable:
+          type: boolean
+          default: false
+
+    HTTPValidationError:
+      type: object
+      properties:
+        detail:
+          type: array
+          items: { $ref: '#/components/schemas/ValidationError' }
+
+    ValidationError:
+      type: object
+      required: [loc, msg, type]
+      properties:
+        loc:
+          type: array
+          items:
+            anyOf: [{ type: string }, { type: integer }]
+        msg:
+          type: string
+        type:
+          type: string
+        input: {}
+        ctx:
+          type: object
+
+    HealthData:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ok, degraded]
+        agent_id:
+          type: string
+        database:
+          type: object
+          properties:
+            ok: { type: boolean }
+        worker:
+          type: object
+          properties:
+            alive: { type: boolean }
+            last_heartbeat: { type: string, format: date-time, nullable: true }
+            age_seconds: { type: number, nullable: true }
+        sqlite_pragma:
+          type: object
+          additionalProperties: true
+
+    HealthUpstreamData:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ok, degraded]
+        agent_id:
+          type: string
+        upstream_status:
+          type: string
+          enum: [connected, disconnected]
+        upstream_base_url:
+          type: string
+
+    DiagnosticsData:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ok, degraded, failed, pending]
+        is_running:
+          type: boolean
+        trigger:
+          type: string
+          enum: [startup, manual, scheduled]
+        duration_ms:
+          type: integer
+          nullable: true
+        ready_100:
+          type: boolean
+        errors:
+          type: array
+          items: { type: string }
+        checks:
+          type: object
+          additionalProperties: true
+
+    JobStatusData:
+      type: object
+      required: [job_id, command_name, status]
+      properties:
+        job_id:
+          type: integer
+        request_id:
+          type: string
+          format: uuid
+          nullable: true
+        command_name:
+          type: string
+        status:
+          type: string
+          enum: [queued, running, completed, failed]
+        attempt_count:
+          type: integer
+        max_attempts:
+          type: integer
+        result:
+          type: object
+          nullable: true
+          additionalProperties: true
+          description: Command result when status=completed
+        error:
+          anyOf: [{ $ref: '#/components/schemas/ErrorDetail' }, { type: 'null' }]
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    CallbackOutbound:
+      type: object
+      description: |
+        Payload agent sends to your backend. Headers: X-Agent-Id, X-Timestamp, X-Nonce, X-Signature.
+        Verify signature with canonical: POST\n{path}\n{timestamp}\n{nonce}\nSHA256(body)
+      required: [event_id, event_type, source]
+      properties:
+        event_id:
+          type: string
+          format: uuid
+        event_type:
+          type: string
+        source:
+          type: string
+          default: morelogin-agent
+        trace_id:
+          type: string
+          format: uuid
+          nullable: true
+        job_id:
+          type: integer
+          nullable: true
+        status:
+          type: string
+          nullable: true
+        callback_url:
+          type: string
+          nullable: true
+        raw_event:
+          type: object
+          additionalProperties: true
+          description: Original inbound event payload
+

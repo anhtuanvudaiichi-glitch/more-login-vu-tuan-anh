@@ -1,0 +1,8 @@
+{
+  "success": true,
+  "data": { "items": [{ "profile_id": "PROFILE_001", "name": "Account A" }], "total": 1 },
+  "error": null,
+  "request_id": "fx-req-001",
+  "agent_id": "agent-001",
+  "job_id": null
+}

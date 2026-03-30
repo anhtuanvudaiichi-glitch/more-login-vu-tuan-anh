@@ -1,0 +1,9 @@
+{
+  "event_id": "evt-job-failed-001",
+  "event_type": "job_failed",
+  "source": "morelogin-agent",
+  "trace_id": "trace-job-002",
+  "job_id": 9002,
+  "status": "failed",
+  "raw_event": { "profile_id": "PROFILE_001", "error": "webdriver timeout" }
+}

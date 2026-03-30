@@ -1,0 +1,21 @@
+# [SOURCE OF TRUTH] replit.nix template (copy to `replit.nix`)
+# Owner role: DevOps/Replit Engineer
+# Last updated: 2026-03-30
+
+{ pkgs }: {
+  deps = [
+    pkgs.nodejs_20
+    pkgs.nodePackages.npm
+    pkgs.nodePackages.pnpm
+    pkgs.git
+    pkgs.curl
+    pkgs.jq
+    pkgs.redis
+    pkgs.postgresql
+  ];
+
+  env = {
+    NODE_ENV = "development";
+    PNPM_HOME = "/home/runner/.local/share/pnpm";
+  };
+}

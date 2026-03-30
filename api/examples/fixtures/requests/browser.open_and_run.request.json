@@ -1,0 +1,7 @@
+{
+  "request_id": "fx-req-004",
+  "idempotency_key": "fx-cmp-001-step-01",
+  "target": { "profile_id": "PROFILE_001" },
+  "payload": { "script": "return document.title;", "is_headless": false },
+  "options": { "async": true, "timeout_seconds": 120 }
+}

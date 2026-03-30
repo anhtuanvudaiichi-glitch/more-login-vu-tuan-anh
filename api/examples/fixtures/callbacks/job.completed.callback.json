@@ -1,0 +1,9 @@
+{
+  "event_id": "evt-job-completed-001",
+  "event_type": "job_completed",
+  "source": "morelogin-agent",
+  "trace_id": "trace-job-001",
+  "job_id": 9001,
+  "status": "completed",
+  "raw_event": { "profile_id": "PROFILE_001", "script_result": "My Page Title" }
+}

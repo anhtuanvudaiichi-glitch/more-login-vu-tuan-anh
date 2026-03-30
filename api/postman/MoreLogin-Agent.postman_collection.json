@@ -1,0 +1,1156 @@
+{
+  "info": {
+    "name": "MoreLogin Agent API",
+    "description": "[SOURCE OF TRUTH] Synced with OpenAPI, guides, golden vectors, and implementation docs.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "[PLACEHOLDER:https://agent.example.com]"
+    },
+    {
+      "key": "apiKeyId",
+      "value": "[PLACEHOLDER:AGENT_API_KEY_ID]"
+    },
+    {
+      "key": "apiKeySecret",
+      "value": "[PLACEHOLDER:AGENT_API_KEY_SECRET]"
+    },
+    {
+      "key": "timestamp",
+      "value": ""
+    },
+    {
+      "key": "nonce",
+      "value": ""
+    },
+    {
+      "key": "signature",
+      "value": ""
+    },
+    {
+      "key": "vectorApiKeySecret",
+      "value": "example_hmac_secret_for_vectors_2026"
+    },
+    {
+      "key": "vectorCallbackSecret",
+      "value": "example_callback_secret_for_vectors_2026"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET /agent/v1/health",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKeyId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Timestamp",
+                "value": "{{timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Nonce",
+                "value": "{{nonce}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Signature",
+                "value": "{{signature}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agent/v1/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agent",
+                "v1",
+                "health"
+              ]
+            }
+          }
+        },
+        {
+          "name": "GET /agent/v1/health/upstream",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKeyId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Timestamp",
+                "value": "{{timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Nonce",
+                "value": "{{nonce}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Signature",
+                "value": "{{signature}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agent/v1/health/upstream",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agent",
+                "v1",
+                "health",
+                "upstream"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Diagnostics",
+      "item": [
+        {
+          "name": "GET /agent/v1/diagnostics/morelogin",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKeyId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Timestamp",
+                "value": "{{timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Nonce",
+                "value": "{{nonce}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Signature",
+                "value": "{{signature}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agent/v1/diagnostics/morelogin",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agent",
+                "v1",
+                "diagnostics",
+                "morelogin"
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /agent/v1/diagnostics/morelogin/refresh",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKeyId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Timestamp",
+                "value": "{{timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Nonce",
+                "value": "{{nonce}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Signature",
+                "value": "{{signature}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agent/v1/diagnostics/morelogin/refresh",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agent",
+                "v1",
+                "diagnostics",
+                "morelogin",
+                "refresh"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cloudphone Commands",
+      "item": [
+        {
+          "name": "POST /agent/v1/commands/cloudphone.exec_command",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKeyId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Timestamp",
+                "value": "{{timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Nonce",
+                "value": "{{nonce}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Signature",
+                "value": "{{signature}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agent/v1/commands/cloudphone.exec_command",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agent",
+                "v1",
+                "commands",
+                "cloudphone.exec_command"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"target\": {\n    \"cloudphone_id\": \"[PLACEHOLDER:CLOUDPHONE_ID]\"\n  },\n  \"payload\": {\n    \"command\": \"echo hello\"\n  },\n  \"options\": {\n    \"async\": false\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /agent/v1/commands/cloudphone.list",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKeyId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Timestamp",
+                "value": "{{timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Nonce",
+                "value": "{{nonce}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Signature",
+                "value": "{{signature}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agent/v1/commands/cloudphone.list",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agent",
+                "v1",
+                "commands",
+                "cloudphone.list"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"target\": {},\n  \"payload\": {\n    \"page\": 1,\n    \"page_size\": 20\n  },\n  \"options\": {\n    \"async\": false\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /agent/v1/commands/cloudphone.power_off",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKeyId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Timestamp",
+                "value": "{{timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Nonce",
+                "value": "{{nonce}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Signature",
+                "value": "{{signature}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agent/v1/commands/cloudphone.power_off",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agent",
+                "v1",
+                "commands",
+                "cloudphone.power_off"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"target\": {\n    \"cloudphone_id\": \"[PLACEHOLDER:CLOUDPHONE_ID]\"\n  },\n  \"payload\": {},\n  \"options\": {\n    \"async\": false\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /agent/v1/commands/cloudphone.power_on",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKeyId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Timestamp",
+                "value": "{{timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Nonce",
+                "value": "{{nonce}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Signature",
+                "value": "{{signature}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agent/v1/commands/cloudphone.power_on",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agent",
+                "v1",
+                "commands",
+                "cloudphone.power_on"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"target\": {\n    \"cloudphone_id\": \"[PLACEHOLDER:CLOUDPHONE_ID]\"\n  },\n  \"payload\": {},\n  \"options\": {\n    \"async\": false\n  }\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Profile/Browser Commands",
+      "item": [
+        {
+          "name": "POST /agent/v1/commands/browser.open_and_run",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKeyId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Timestamp",
+                "value": "{{timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Nonce",
+                "value": "{{nonce}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Signature",
+                "value": "{{signature}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agent/v1/commands/browser.open_and_run",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agent",
+                "v1",
+                "commands",
+                "browser.open_and_run"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"target\": {\n    \"profile_id\": \"[PLACEHOLDER:PROFILE_ID]\"\n  },\n  \"payload\": {\n    \"script\": \"console.log('hello from postman')\"\n  },\n  \"options\": {\n    \"async\": true\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /agent/v1/commands/profile.list",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKeyId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Timestamp",
+                "value": "{{timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Nonce",
+                "value": "{{nonce}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Signature",
+                "value": "{{signature}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agent/v1/commands/profile.list",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agent",
+                "v1",
+                "commands",
+                "profile.list"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"target\": {},\n  \"payload\": {\n    \"page\": 1,\n    \"page_size\": 20\n  },\n  \"options\": {\n    \"async\": false\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /agent/v1/commands/profile.start",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKeyId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Timestamp",
+                "value": "{{timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Nonce",
+                "value": "{{nonce}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Signature",
+                "value": "{{signature}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agent/v1/commands/profile.start",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agent",
+                "v1",
+                "commands",
+                "profile.start"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"target\": {\n    \"profile_id\": \"[PLACEHOLDER:PROFILE_ID]\"\n  },\n  \"payload\": {},\n  \"options\": {\n    \"async\": false\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /agent/v1/commands/profile.status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKeyId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Timestamp",
+                "value": "{{timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Nonce",
+                "value": "{{nonce}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Signature",
+                "value": "{{signature}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agent/v1/commands/profile.status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agent",
+                "v1",
+                "commands",
+                "profile.status"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"target\": {\n    \"profile_id\": \"[PLACEHOLDER:PROFILE_ID]\"\n  },\n  \"payload\": {},\n  \"options\": {\n    \"async\": false\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /agent/v1/commands/profile.stop",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKeyId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Timestamp",
+                "value": "{{timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Nonce",
+                "value": "{{nonce}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Signature",
+                "value": "{{signature}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agent/v1/commands/profile.stop",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agent",
+                "v1",
+                "commands",
+                "profile.stop"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"target\": {\n    \"profile_id\": \"[PLACEHOLDER:PROFILE_ID]\"\n  },\n  \"payload\": {},\n  \"options\": {\n    \"async\": false\n  }\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Workflow Commands",
+      "item": [
+        {
+          "name": "POST /agent/v1/commands/file.attach_from_url",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKeyId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Timestamp",
+                "value": "{{timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Nonce",
+                "value": "{{nonce}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Signature",
+                "value": "{{signature}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agent/v1/commands/file.attach_from_url",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agent",
+                "v1",
+                "commands",
+                "file.attach_from_url"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"target\": {\n    \"cloudphone_id\": \"[PLACEHOLDER:CLOUDPHONE_ID]\"\n  },\n  \"payload\": {\n    \"file_url\": \"https://example.com/file.txt\"\n  },\n  \"options\": {\n    \"async\": true,\n    \"timeout_seconds\": 300\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /agent/v1/commands/file.download",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKeyId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Timestamp",
+                "value": "{{timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Nonce",
+                "value": "{{nonce}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Signature",
+                "value": "{{signature}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agent/v1/commands/file.download",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agent",
+                "v1",
+                "commands",
+                "file.download"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"target\": {\n    \"cloudphone_id\": \"[PLACEHOLDER:CLOUDPHONE_ID]\"\n  },\n  \"payload\": {\n    \"file_url\": \"https://example.com/file.txt\"\n  },\n  \"options\": {\n    \"async\": true,\n    \"timeout_seconds\": 300\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /agent/v1/commands/schedule.cancel",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKeyId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Timestamp",
+                "value": "{{timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Nonce",
+                "value": "{{nonce}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Signature",
+                "value": "{{signature}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agent/v1/commands/schedule.cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agent",
+                "v1",
+                "commands",
+                "schedule.cancel"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"target\": {},\n  \"payload\": {\n    \"schedule_id\": \"YOUR_SCHEDULE_ID\"\n  },\n  \"options\": {\n    \"async\": false\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /agent/v1/commands/schedule.create",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKeyId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Timestamp",
+                "value": "{{timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Nonce",
+                "value": "{{nonce}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Signature",
+                "value": "{{signature}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agent/v1/commands/schedule.create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agent",
+                "v1",
+                "commands",
+                "schedule.create"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"target\": {\n    \"cloudphone_id\": \"[PLACEHOLDER:CLOUDPHONE_ID]\"\n  },\n  \"payload\": {\n    \"task_config\": {\n      \"name\": \"demo-task\",\n      \"cron\": \"*/5 * * * *\"\n    }\n  },\n  \"options\": {\n    \"async\": true\n  }\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Jobs",
+      "item": [
+        {
+          "name": "GET /agent/v1/jobs/{job_id}",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKeyId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Timestamp",
+                "value": "{{timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Nonce",
+                "value": "{{nonce}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Signature",
+                "value": "{{signature}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agent/v1/jobs/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agent",
+                "v1",
+                "jobs",
+                "1"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Callbacks",
+      "item": [
+        {
+          "name": "POST /agent/v1/callbacks/morelogin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agent/v1/callbacks/morelogin",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agent",
+                "v1",
+                "callbacks",
+                "morelogin"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event_id\": \"{{$guid}}\",\n  \"event_type\": \"custom\",\n  \"source\": \"morelogin\",\n  \"trace_id\": \"{{$guid}}\",\n  \"payload\": {\n    \"status\": \"running\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "POST /agent/v1/local-ops/callbacks/dead-letter/{event_id}/retry",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKeyId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Timestamp",
+                "value": "{{timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Nonce",
+                "value": "{{nonce}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Signature",
+                "value": "{{signature}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agent/v1/local-ops/callbacks/dead-letter/YOUR_EVENT_ID/retry",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agent",
+                "v1",
+                "local-ops",
+                "callbacks",
+                "dead-letter",
+                "YOUR_EVENT_ID",
+                "retry"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Compliance - Golden Vectors",
+      "item": [
+        {
+          "name": "Run HMAC Golden Vectors",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKeyId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Timestamp",
+                "value": "{{timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Nonce",
+                "value": "{{nonce}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Signature",
+                "value": "{{signature}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agent/v1/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agent",
+                "v1",
+                "health"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const secret = pm.collectionVariables.get('vectorApiKeySecret');",
+                  "const vectors = [",
+                  "  { id: 'HMAC-001', canonical: 'GET\\\\n/agent/v1/health\\\\n1760000000\\\\n11111111-1111-1111-1111-111111111111\\\\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', expected: 'd5d5bc3386b20c388e8c772b9a657c663eafd24006bf852505dc2931164c788c' },",
+                  "  { id: 'HMAC-002', canonical: 'POST\\\\n/agent/v1/commands/profile.list\\\\n1760000001\\\\n22222222-2222-2222-2222-222222222222\\\\ne3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', expected: 'a0778d70524aa85afa89257e8b0dc2eb252604cad70bcdaf8e40f4fea4f37170' },",
+                  "  { id: 'HMAC-003', canonical: 'POST\\\\n/agent/v1/commands/profile.start\\\\n1760000002\\\\n33333333-3333-3333-3333-333333333333\\\\n43105408d4d156a5fd3893da7ad39c1999ebb17e0d41d6ccde2d9d3239536b20', expected: '68690b061ac2e59edde4ed7bae4d33ec5527c275e38574ab156db3a21bc78e9b' },",
+                  "  { id: 'HMAC-004', canonical: 'POST\\\\n/agent/v1/commands/browser.open_and_run\\\\n1760000003\\\\n44444444-4444-4444-4444-444444444444\\\\nd8d7099dd146db13bd38c1bdf1d178619a5a60a5cc59a9df2a3d2001fd81cfeb', expected: 'b16f0a4993ae5d613335ded7aff913259e2e87912deac4ea4dcee88144b1f35e' }",
+                  "];",
+                  "vectors.forEach(v => {",
+                  "  const actual = CryptoJS.HmacSHA256(v.canonical, secret).toString();",
+                  "  pm.test(${v.id} signature must match, function () { pm.expect(actual).to.eql(v.expected); });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Run Callback Golden Vectors",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-API-Key",
+                "value": "{{apiKeyId}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Timestamp",
+                "value": "{{timestamp}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Nonce",
+                "value": "{{nonce}}",
+                "type": "text"
+              },
+              {
+                "key": "X-Signature",
+                "value": "{{signature}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/agent/v1/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "agent",
+                "v1",
+                "health"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const secret = pm.collectionVariables.get('vectorCallbackSecret');",
+                  "const vectors = [",
+                  "  { id: 'CB-001', canonical: 'POST\\\\n/api/agent/callback\\\\n1760000100\\\\naaaa1111-1111-1111-1111-111111111111\\\\naff1e967ca1b10fca7a5217a90da5865473812561bd2352d95f470ac5b2200d8', expected: 'bbc6deed1dad7959929a06518a2f86be3ce4d37c3fe2643bf140865880a82992' },",
+                  "  { id: 'CB-002', canonical: 'POST\\\\n/api/agent/callback\\\\n1760000101\\\\nbbbb2222-2222-2222-2222-222222222222\\\\naff1e967ca1b10fca7a5217a90da5865473812561bd2352d95f470ac5b2200d8', expected: '1fae976da152be0499262f98107caa27fada1f6464c179efeb0c3c66454c926c' }",
+                  "];",
+                  "vectors.forEach(v => {",
+                  "  const actual = CryptoJS.HmacSHA256(v.canonical, secret).toString();",
+                  "  pm.test(${v.id} callback signature must match, function () { pm.expect(actual).to.eql(v.expected); });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Generate timestamp and nonce",
+          "var timestamp = Math.floor(Date.now() / 1000).toString();",
+          "var nonce = pm.variables.replaceIn('{{$guid}}');",
+          "pm.variables.set('timestamp', timestamp);",
+          "pm.variables.set('nonce', nonce);",
+          "",
+          "var apiKeySecret = pm.variables.get('apiKeySecret') || '';",
+          "var method = pm.request.method.toUpperCase();",
+          "var path = '/' + pm.request.url.path.join('/');",
+          "var rawBody = '';",
+          "if (pm.request.body && pm.request.body.mode === 'raw' && pm.request.body.raw) {",
+          "  rawBody = pm.request.body.raw;",
+          "}",
+          "var bodyHash = CryptoJS.SHA256(rawBody).toString();",
+          "var canonical = method + '\\n' + path + '\\n' + timestamp + '\\n' + nonce + '\\n' + bodyHash;",
+          "var signature = CryptoJS.HmacSHA256(canonical, apiKeySecret).toString();",
+          "pm.variables.set('signature', signature);"
+        ]
+      }
+    }
+  ]
+}
